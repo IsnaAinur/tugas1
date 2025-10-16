@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # profile
+=======
+# tugas1
+>>>>>>> e1a49ef (commit pertama)
 
 A new Flutter project.
 

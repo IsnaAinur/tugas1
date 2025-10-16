@@ -90,12 +90,21 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
+<<<<<<< HEAD
             VALUE "FileDescription", "profile" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "profile" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
             VALUE "OriginalFilename", "profile.exe" "\0"
             VALUE "ProductName", "profile" "\0"
+=======
+            VALUE "FileDescription", "tugas1" "\0"
+            VALUE "FileVersion", VERSION_AS_STRING "\0"
+            VALUE "InternalName", "tugas1" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2025 com.example. All rights reserved." "\0"
+            VALUE "OriginalFilename", "tugas1.exe" "\0"
+            VALUE "ProductName", "tugas1" "\0"
+>>>>>>> e1a49ef (commit pertama)
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

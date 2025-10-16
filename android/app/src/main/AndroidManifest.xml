@@ -1,6 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
+<<<<<<< HEAD
         android:label="profile"
+=======
+        android:label="tugas1"
+>>>>>>> e1a49ef (commit pertama)
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -1,6 +1,11 @@
 {
+<<<<<<< HEAD
     "name": "profile",
     "short_name": "profile",
+=======
+    "name": "tugas1",
+    "short_name": "tugas1",
+>>>>>>> e1a49ef (commit pertama)
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
