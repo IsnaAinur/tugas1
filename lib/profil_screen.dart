@@ -1,8 +1,49 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'editprofil_screen.dart';
 import 'penghitung_screen.dart';
+import 'home_screen.dart';
 
-class ProfilScreen extends StatelessWidget {
+class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
+
+  @override
+  State<ProfilScreen> createState() => _ProfilScreenState();
+}
+
+class _ProfilScreenState extends State<ProfilScreen> {
+  Uint8List? _imageBytes;
+  String? nama;
+  String? alamat;
+  String? email;
+  String? universitas;
+  String? prodi;
+  String? hobi;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      final base64Image = prefs.getString('foto_profil');
+      if (base64Image != null) {
+        _imageBytes = base64Decode(base64Image);
+      }
+      nama = prefs.getString('nama') ?? "Isna Ainur Rohmah";
+      alamat = prefs.getString('alamat') ?? "Boyolali";
+      email = prefs.getString('email') ?? "isna@gmail.com";
+      universitas = prefs.getString('universitas') ??
+          "Universitas Duta Bangsa Surakarta";
+      prodi = prefs.getString('prodi') ?? "Teknologi Rekayasa Perangkat Lunak";
+      hobi = prefs.getString('hobi') ?? "Dengerin musik";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +57,13 @@ class ProfilScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 4,
+        actions: [
+          // tombol edit di pojok kanan atas juga tetap ada
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: _goToEdit,
+          ),
+        ],
       ),
       body: Center(
         child: ListView(
@@ -23,17 +71,24 @@ class ProfilScreen extends StatelessWidget {
           children: [
             // Foto profil
             CircleAvatar(
-              backgroundImage: const AssetImage("asset/profil.jpg"),
               radius: 80,
               backgroundColor: Colors.teal.shade100,
+              backgroundImage:
+                  _imageBytes != null ? MemoryImage(_imageBytes!) : null,
+              child: _imageBytes == null
+                  ? const Icon(Icons.person, size: 80, color: Colors.white)
+                  : null,
             ),
-            const SizedBox(height: 16),
-            
+
+            const SizedBox(height: 12),
+
+
+
             // Nama
-            const Text(
-              "Isna Ainur Rohmah",
+            Text(
+              nama ?? "",
               textAlign: TextAlign.center,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
                 color: Colors.teal,
@@ -41,7 +96,7 @@ class ProfilScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              "Mahasiswi Teknologi Rekayasa Perangkat Lunak",
+              prodi ?? "",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -49,6 +104,8 @@ class ProfilScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
+
+            // Tombol navigasi tambahan
             TextButton(
               onPressed: () {
                 Navigator.of(context).push(
@@ -65,7 +122,23 @@ class ProfilScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 20),
-            // Baris ikon love
+            // 🔹 Tombol Edit Profil di bawah foto
+            ElevatedButton.icon(
+              onPressed: _goToEdit,
+              icon: const Icon(Icons.edit, color: Colors.white),
+              label: const Text(
+                "Edit Profil",
+                style: TextStyle(color: Colors.white),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+            // Ikon love
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
@@ -78,61 +151,13 @@ class ProfilScreen extends StatelessWidget {
             ),
             const SizedBox(height: 30),
 
-            // Informasi dalam Card
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.home, color: Colors.teal),
-                title: Text("Alamat"),
-                subtitle: Text("Boyolali"),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.email, color: Colors.teal),
-                title: Text("Email"),
-                subtitle: Text("isna@gmail.com"),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.school, color: Colors.teal),
-                title: Text("Universitas"),
-                subtitle: Text("Universitas Duta Bangsa Surakarta"),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.code, color: Colors.teal),
-                title: Text("Program Studi"),
-                subtitle: Text("Teknologi Rekayasa Perangkat Lunak"),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Card(
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: const ListTile(
-                leading: Icon(Icons.local_pizza, color: Colors.teal),
-                title: Text("Hobi"),
-                subtitle: Text("Dengerin musik"),
-              ),
-            ),
+            // Informasi profil
+            _buildInfoCard(Icons.home, "Alamat", alamat ?? ""),
+            _buildInfoCard(Icons.email, "Email", email ?? ""),
+            _buildInfoCard(Icons.school, "Universitas", universitas ?? ""),
+            _buildInfoCard(Icons.code, "Program Studi", prodi ?? ""),
+            _buildInfoCard(Icons.local_pizza, "Hobi", hobi ?? ""),
+
             const SizedBox(height: 10),
 
             // Tombol logout
@@ -140,22 +165,50 @@ class ProfilScreen extends StatelessWidget {
               color: Colors.red.shade400,
               elevation: 3,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: ListTile(
                 leading: const Icon(Icons.exit_to_app, color: Colors.white),
                 title: const Text(
                   "Logout",
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  );
                 },
               ),
             ),
             const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  // fungsi untuk membuka halaman edit profil
+  Future<void> _goToEdit() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const EditProfilScreen()),
+    );
+    _loadProfile(); // refresh setelah kembali
+  }
+
+  Widget _buildInfoCard(IconData icon, String title, String value) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.teal),
+        title: Text(title),
+        subtitle: Text(value.isNotEmpty ? value : "-"),
       ),
     );
   }
